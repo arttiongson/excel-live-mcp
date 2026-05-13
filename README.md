@@ -16,7 +16,7 @@
 
 ## Why a Token Optimized Excel MCP?
 
-Most existing Excel MCP servers (`negokaz/excel-mcp-server`, `sbroenne/mcp-server-excel`, `mort-lab/excel-mcp`, `haris-musa/excel-mcp-server`, `sbraind/excel-mcp-server`) target feature completeness. They give the LLM 20+ tools that read, write, format, run VBA, and manipulate PivotTables.
+Most existing Excel MCP servers  target feature completeness. They give the LLM 20+ tools that read, write, format, run VBA, and manipulate PivotTables.
 
 That's the wrong tradeoff when **context window cost** is your bottleneck. Returning raw rows blows your token budget on data the model has to re-read on every turn.
 
