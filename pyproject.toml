@@ -1,0 +1,75 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "excel-live-mcp"
+version = "0.1.0"
+description = "Token Optimized Excel MCP Server for Claude Code. Read-only live Microsoft Excel access via peek_sheet, groupby_sum, count_where, and other context-efficient tools, designed to minimize LLM token usage."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Art Tiongson" }]
+keywords = [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "excel",
+    "microsoft-excel",
+    "xlwings",
+    "claude",
+    "claude-code",
+    "claude-desktop",
+    "anthropic",
+    "llm",
+    "llm-tools",
+    "ai-agent",
+    "ai-tools",
+    "spreadsheet",
+    "pandas",
+    "context-efficient",
+    "token-efficient",
+    "live-excel",
+    "read-only",
+    "windows",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial :: Spreadsheet",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+]
+dependencies = [
+    "mcp>=1.0.0",
+    "xlwings>=0.31.0",
+    "pandas>=2.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/arttiongson/excel-live-mcp"
+Repository = "https://github.com/arttiongson/excel-live-mcp"
+Issues = "https://github.com/arttiongson/excel-live-mcp/issues"
+
+[project.scripts]
+excel-live-mcp = "excel_mcp.server:cli_main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["excel_mcp*"]
+exclude = ["tests*", "__pycache__"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
