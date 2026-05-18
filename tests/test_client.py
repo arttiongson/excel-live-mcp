@@ -356,6 +356,49 @@ class TestColumnStats:
         assert result["null"] == 3
 
 
+# ---------- OneDrive-for-Business .fullname tolerance ----------
+class TestSafeFullname:
+    def test_returns_value_when_resolvable(self):
+        bk = mock.Mock()
+        bk.fullname = r"C:\local\path\book.xlsx"
+        assert ec._safe_fullname(bk) == r"C:\local\path\book.xlsx"
+
+    def test_returns_none_when_fullname_raises(self):
+        """REGRESSION: OneDrive-for-Business books raise XlwingsError on
+        .fullname. Must degrade to None, not propagate and kill every tool."""
+        bk = mock.Mock()
+        type(bk).fullname = mock.PropertyMock(
+            side_effect=Exception("Couldn't find your local OneDrive for Business file")
+        )
+        assert ec._safe_fullname(bk) is None
+
+    def test_get_book_matches_by_name_when_fullname_broken(self):
+        """A workbook whose .fullname raises must still be findable by name."""
+        bk = mock.Mock()
+        bk.name = "Budget.xlsx"
+        type(bk).fullname = mock.PropertyMock(
+            side_effect=Exception("Couldn't find your local OneDrive for Business file")
+        )
+        app = mock.Mock()
+        app.books = [bk]
+        with mock.patch.object(ec.xw, "apps", [app]):
+            assert ec._get_book("Budget.xlsx") is bk
+
+    def test_get_book_not_found_lists_open_names(self):
+        """Even with broken .fullname, the not-found error still enumerates
+        open workbook names (uses .name, never .fullname)."""
+        bk = mock.Mock()
+        bk.name = "Budget.xlsx"
+        type(bk).fullname = mock.PropertyMock(
+            side_effect=Exception("Couldn't find your local OneDrive for Business file")
+        )
+        app = mock.Mock()
+        app.books = [bk]
+        with mock.patch.object(ec.xw, "apps", [app]):
+            with pytest.raises(ec.ExcelError, match="not open"):
+                ec._get_book("SomethingElse.xlsx")
+
+
 # ---------- Tool-level: unique_values ----------
 class TestUniqueValues:
     def test_basic(self):

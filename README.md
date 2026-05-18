@@ -157,6 +157,10 @@ The first call that triggers a sheet read pulls the used range via COM and cache
 
 Returning raw rows wastes the LLM's context window. A `groupby_sum` over a 50K-row sheet pulls 50K rows of context if done naively. Doing the pivot server-side returns one number per group. The tool design biases toward "ask a question, get an answer" rather than "pull data, reason over it."
 
+### Does it work with OneDrive for Business or SharePoint-synced workbooks?
+
+Yes. xlwings raises `XlwingsError: Couldn't find your local OneDrive for Business file` when you access a cloud-synced workbook's `.fullname`. excel-live-mcp never depends on the filesystem path; it identifies workbooks by name and degrades `.fullname` to `null`. All read and aggregation tools work normally on OneDrive for Business and SharePoint-backed workbooks. This is a common xlwings pain point and a deliberate design choice here.
+
 ### How is this different from openpyxl-based Excel MCPs?
 
 openpyxl reads `.xlsx` files from disk. It doesn't see live changes, doesn't know which workbook is active, and can't read your current selection. excel-live-mcp uses xlwings + COM, so it operates on the Excel session that's actually open on your machine.

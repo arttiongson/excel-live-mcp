@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "excel-live-mcp"
-version = "0.1.0"
+version = "0.1.1"
 description = "Token Optimized Excel MCP Server for Claude Code. Read-only live Microsoft Excel access via peek_sheet, groupby_sum, count_where, and other context-efficient tools, designed to minimize LLM token usage."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -40,11 +40,25 @@ def _cache_clear() -> None:
 
 
 # ---------- Helpers ----------
+def _safe_fullname(bk: xw.Book) -> str | None:
+    """bk.fullname raises XlwingsError for OneDrive-for-Business / SharePoint
+    backed workbooks (xlwings can't map the cloud URL to a local path).
+
+    We never actually need the filesystem path; workbooks are identified by
+    name. Return None instead of letting the exception kill every tool.
+    """
+    try:
+        return bk.fullname
+    except Exception:
+        return None
+
+
 def _get_book(workbook: str) -> xw.Book:
     """Match by exact name, fullname, or unique case-insensitive basename.
 
     Detects ambiguity across multiple Excel app instances instead of returning
-    the first found.
+    the first found. Tolerates OneDrive-for-Business workbooks where .fullname
+    is unresolvable (matches on name only in that case).
     """
     if not xw.apps:
         raise ExcelError("No Excel instance running. Open Excel first.")
@@ -52,7 +66,8 @@ def _get_book(workbook: str) -> xw.Book:
     case_matches: list[xw.Book] = []
     for app in xw.apps:
         for bk in app.books:
-            if bk.name == workbook or bk.fullname == workbook:
+            fn = _safe_fullname(bk)
+            if bk.name == workbook or (fn is not None and fn == workbook):
                 exact_matches.append(bk)
             elif bk.name.lower() == workbook.lower():
                 case_matches.append(bk)
@@ -260,7 +275,7 @@ def list_workbooks() -> dict:
                 active_sheet = None
             out.append({
                 "name": bk.name,
-                "fullname": bk.fullname,
+                "fullname": _safe_fullname(bk),
                 "sheets": [s.name for s in bk.sheets],
                 "active_sheet": active_sheet,
             })
